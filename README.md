@@ -4,15 +4,15 @@ A production-grade Flutter application for paramedics to log critical patient tr
 
 ---
 
-## Overview
-
-Field paramedics operate under extreme time pressure, often with gloved hands, inside moving vehicles, in poor lighting. This app is built around those constraints — every interaction is optimised for speed, every tap target meets the 48dp minimum, and no network connection is ever required to save a record.
-
----
-
 ## Demo
 
 **[Watch the full walkthrough on Loom →](https://www.loom.com/share/9bc854bebf7947d687be9495cbdc5391)**
+
+---
+
+## Overview
+
+Field paramedics operate under extreme time pressure, often with gloved hands, inside moving vehicles, in poor lighting. This app is built around those constraints — every interaction is optimised for speed, every tap target meets the 48dp minimum, and no network connection is ever required to save a record.
 
 ---
 
@@ -51,8 +51,8 @@ lib/
 ├── models/
 │   └── triage_record.dart     # TriageRecord, TriageStatus, SyncStatus, RecordsFilter
 ├── repositories/
-│   ├── triage_repository.dart         # Abstract interface
-│   ├── local_triage_repository.dart   # SQLite implementation (mobile)
+│   ├── triage_repository.dart           # Abstract interface
+│   ├── local_triage_repository.dart     # SQLite implementation (mobile)
 │   └── in_memory_triage_repository.dart # In-memory implementation (web/demo)
 ├── providers/
 │   └── providers.dart         # All Riverpod providers (auth, records, sync, form)
@@ -68,11 +68,11 @@ lib/
 │   ├── profile_screen.dart
 │   └── shell_scaffold.dart    # Bottom nav shell
 └── widgets/
-    ├── priority_pill.dart      # Selectable hazard-colour pill + dot + badge
-    ├── sync_status_badge.dart  # Animated sync status pill
+    ├── priority_pill.dart       # Selectable hazard-colour pill + dot + badge
+    ├── sync_status_badge.dart   # Animated sync status pill
     ├── connectivity_banner.dart # Persistent online/offline banner
-    ├── app_card.dart           # Floating card + InfoChip
-    └── record_list_tile.dart   # Compact record row with priority dot
+    ├── app_card.dart            # Floating card + InfoChip
+    └── record_list_tile.dart    # Compact record row with priority dot
 ```
 
 ### Key architectural decisions
@@ -148,6 +148,57 @@ Tap **Quick Demo Login** on the login screen. It pre-fills `EMS-001 / 1234` and 
 
 ---
 
+## Testing
+
+**85 tests, all passing.** Run the full suite with:
+
+```bash
+flutter test
+```
+
+Tests are pure Dart unit tests — no device or emulator required.
+
+### Test files
+
+| File | Tests | What's covered |
+|---|---|---|
+| `test/models/triage_record_test.dart` | 24 | Model construction, `copyWith`, serialization round-trips, equality, `RecordsFilter` labels |
+| `test/repositories/in_memory_triage_repository_test.dart` | 18 | Save, retrieve, upsert, delete, pending queue ordering, reactive stream emissions |
+| `test/providers/auth_notifier_test.dart` | 21 | Initial state, `login()` valid/invalid paths, `quickDemoLogin()`, `logout()` |
+| `test/providers/new_record_form_test.dart` | 22 | Field updates, `isValid` gate, validation error messages, successful submit, whitespace trimming, form reset |
+
+### Coverage highlights
+
+**`TriageRecord` model**
+- Priority boundary assertions — `0` and `6` throw, `1`–`5` are valid
+- Full SQLite serialization round-trip for all field types, including nullable `syncedAt` and `failureReason`
+- Graceful enum fallback for unknown values read from the database
+- All 5 priority levels, all `SyncStatus` and `TriageStatus` variants survive round-trip
+- Equality is id-based; `hashCode` is consistent; records are safe as map keys
+
+**`InMemoryTriageRepository`**
+- `getAllRecords` always returns newest-first
+- `saveRecord` with a duplicate id replaces rather than duplicates
+- `getPendingRecords` returns only `pending` and `failed` records, ordered oldest-first (critical for sync ordering)
+- `watchAllRecords` stream emits a fresh snapshot after every mutation
+- Deleting a non-existent id does not throw
+
+**`AuthNotifier`**
+- Any non-empty id with exactly a 4-digit PIN is accepted (dummy auth contract)
+- PIN length validation: 3 digits → rejected, 4 → accepted, 5 → rejected
+- `EMS-001` and `EMS-002` resolve to known display names; all other IDs get a generated name
+- `logout()` is safe to call when already unauthenticated
+
+**`NewRecordFormNotifier`**
+- `isValid` is `false` until all three required fields are non-empty and non-whitespace
+- Updating any field clears the active `validationError`
+- Each missing field produces a distinct, specific error message
+- Submitted record is correctly persisted to the repository with the right priority and sync status
+- Patient name and condition are trimmed of leading/trailing whitespace before saving
+- Form fully resets after a successful submit (ready for next patient within one second)
+
+---
+
 ## Roadmap / Production Hardening
 
 The following are out of scope for this assessment but required before a real deployment:
@@ -156,7 +207,6 @@ The following are out of scope for this assessment but required before a real de
 - [ ] Biometric / secure PIN storage (replace dummy auth)
 - [ ] Background sync service (WorkManager on Android, BGTaskScheduler on iOS)
 - [ ] End-to-end encryption for records at rest and in transit
-- [ ] Unit + widget tests for providers and critical widgets
 - [ ] Crash reporting (Sentry / Firebase Crashlytics)
 
 ---
