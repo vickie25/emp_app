@@ -12,6 +12,9 @@ class InMemoryTriageRepository implements TriageRepository {
     _seed();
   }
 
+  /// Named constructor for tests — starts empty, no seed data.
+  InMemoryTriageRepository.testInstance();
+
   static final InMemoryTriageRepository instance =
       InMemoryTriageRepository._();
 
