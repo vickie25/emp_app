@@ -58,5 +58,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Agent/dev notes — not part of the codebase
-agentinstructions.md
+# Agent tooling (Kiro skills, steering files — dev environment only)
+.agent/
+
