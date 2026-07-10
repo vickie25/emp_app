@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/providers.dart';
 import '../router/app_router.dart';
 import '../theme/app_theme.dart';
@@ -90,7 +91,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 52),
 
                   // ── App mark ──────────────────────────────────────────
                   Container(
@@ -101,9 +102,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
+                          color: AppColors.primary.withValues(alpha: 0.28),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
@@ -126,8 +127,75 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       color: AppColors.textSecondary,
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  // Demo context label
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'Assessment Demo',
+                      style: GoogleFonts.manrope(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
 
                   const SizedBox(height: 40),
+
+                  // ── Quick demo login (PRIMARY path) ───────────────────
+                  ElevatedButton.icon(
+                    onPressed: _isLoading ? null : _quickDemoLogin,
+                    icon: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.play_circle_outline_rounded),
+                    label: const Text('Quick Demo Login'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      textStyle: GoogleFonts.manrope(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ── Divider with "or sign in manually" label ──────────
+                  Row(
+                    children: [
+                      const Expanded(child: Divider(color: AppColors.border)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'or sign in manually',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ),
+                      const Expanded(child: Divider(color: AppColors.border)),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
 
                   // ── Paramedic ID ──────────────────────────────────────
                   TextField(
@@ -144,7 +212,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
 
                   // ── PIN entry ─────────────────────────────────────────
                   TextField(
@@ -176,45 +244,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
 
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 16),
 
-                  // ── Login button ──────────────────────────────────────
-                  ElevatedButton(
+                  // ── Sign In button (secondary) ────────────────────────
+                  OutlinedButton(
                     onPressed: _isLoading ? null : _login,
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text('Sign In'),
+                    child: const Text('Sign In'),
                   ),
 
-                  const SizedBox(height: 12),
-
-                  // ── Quick demo login (primary path) ───────────────────
-                  OutlinedButton.icon(
-                    onPressed: _isLoading ? null : _quickDemoLogin,
-                    icon: const Icon(Icons.play_circle_outline_rounded),
-                    label: const Text('Quick Demo Login'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(
-                        color: AppColors.primary,
-                        width: 2,
-                      ),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
 
                   // ── Offline caption ───────────────────────────────────
                   Row(

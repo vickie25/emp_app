@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/triage_record.dart';
 import '../providers/providers.dart';
 import '../router/app_router.dart';
@@ -25,7 +26,6 @@ class _NewRecordScreenState extends ConsumerState<NewRecordScreen> {
   @override
   void initState() {
     super.initState();
-    // Autofocus patient name
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _patientNameFocus.requestFocus();
     });
@@ -42,14 +42,14 @@ class _NewRecordScreenState extends ConsumerState<NewRecordScreen> {
   Future<void> _submit() async {
     final notifier = ref.read(newRecordFormProvider.notifier);
     final isOnline = ref.read(isOnlineProvider);
+
+    // Trigger validation first
     final success = await notifier.submit();
 
     if (success && mounted) {
-      // Clear local text controllers
       _patientNameController.clear();
       _conditionController.clear();
 
-      // Show SnackBar — micro-interaction, not a screen
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -67,10 +67,10 @@ class _NewRecordScreenState extends ConsumerState<NewRecordScreen> {
                   isOnline
                       ? 'Submitted · Synced successfully'
                       : 'Saved · Will sync automatically',
-                  style: const TextStyle(
-                    fontFamily: 'Manrope',
+                  style: GoogleFonts.manrope(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -83,7 +83,6 @@ class _NewRecordScreenState extends ConsumerState<NewRecordScreen> {
         );
       }
 
-      // Go back to home
       if (mounted) context.go(AppRoutes.home);
     }
   }
@@ -103,16 +102,13 @@ class _NewRecordScreenState extends ConsumerState<NewRecordScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Text(
+        title: Text(
           'Discard record?',
-          style: TextStyle(
-            fontFamily: 'Manrope',
-            fontWeight: FontWeight.w700,
-          ),
+          style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
         ),
-        content: const Text(
+        content: Text(
           'Unsaved data will be lost. Discard this record?',
-          style: TextStyle(fontFamily: 'Manrope'),
+          style: GoogleFonts.manrope(),
         ),
         actions: [
           TextButton(
@@ -174,17 +170,16 @@ class _NewRecordScreenState extends ConsumerState<NewRecordScreen> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.danger.withValues(alpha: 0.1),
+                  color: AppColors.danger.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
+                child: Text(
                   'LIVE',
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
+                  style: GoogleFonts.manrope(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: AppColors.danger,
-                    letterSpacing: 1,
+                    letterSpacing: 1.0,
                   ),
                 ),
               ),
@@ -333,9 +328,11 @@ class _NewRecordScreenState extends ConsumerState<NewRecordScreen> {
 
             // ── Sticky submit area ─────────────────────────────────
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.surface,
-                boxShadow: AppShadows.bottom,
+                border: const Border(
+                  top: BorderSide(color: AppColors.border, width: 1),
+                ),
               ),
               padding: EdgeInsets.fromLTRB(
                 20,
@@ -388,13 +385,7 @@ class _NewRecordScreenState extends ConsumerState<NewRecordScreen> {
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     child: ElevatedButton(
-                      onPressed: form.isSubmitting
-                          ? null
-                          : (form.isValid ? _submit : () {
-                              ref
-                                  .read(newRecordFormProvider.notifier)
-                                  .submit();
-                            }),
+                      onPressed: form.isSubmitting ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: form.isValid
                             ? AppColors.primary

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/triage_record.dart';
 import '../providers/providers.dart';
@@ -51,13 +52,31 @@ class HomeScreen extends ConsumerWidget {
                         Text(
                           '${_greeting()},',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: AppColors.textMuted,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           firstName,
                           style: theme.textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: 12,
+                              color: AppColors.textMuted,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              DateFormat('EEEE, d MMMM').format(DateTime.now()),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.textMuted,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -67,20 +86,20 @@ class HomeScreen extends ConsumerWidget {
                     icon: Icons.notifications_none_rounded,
                     badge: pendingCount > 0 ? pendingCount : null,
                     onTap: () => context.go(AppRoutes.records),
-                    tooltip: 'Alerts',
+                    tooltip: 'Pending records',
                   ),
                   const SizedBox(width: 8),
-                  // Sync history (calendar icon repurposed)
+                  // Sync history icon
                   _HeaderIconButton(
                     icon: Icons.sync_rounded,
                     onTap: () => context.go(AppRoutes.settings),
-                    tooltip: 'Sync History',
+                    tooltip: 'Sync settings',
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             // ── Connectivity banner (persistent, non-dismissible) ──────
             const ConnectivityBanner(),
@@ -89,31 +108,6 @@ class HomeScreen extends ConsumerWidget {
             Expanded(
               child: CustomScrollView(
                 slivers: [
-                  // Date & quick stats
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_today_rounded,
-                            size: 14,
-                            color: AppColors.textMuted,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            DateFormat('EEEE, d MMMM y')
-                                .format(DateTime.now()),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.textMuted,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
                   // ── New Triage Record CTA ────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
@@ -127,7 +121,7 @@ class HomeScreen extends ConsumerWidget {
                   // ── Filter chips ─────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -143,33 +137,38 @@ class HomeScreen extends ConsumerWidget {
                                 final isSelected = filter == f;
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 8),
-                                  child: FilterChip(
-                                    label: Text(f.label),
-                                    selected: isSelected,
-                                    onSelected: (_) {
-                                      ref
-                                          .read(recordsFilterProvider.notifier)
-                                          .state = f;
-                                    },
-                                    selectedColor: AppColors.primaryLight,
-                                    checkmarkColor: AppColors.primary,
-                                    labelStyle: TextStyle(
-                                      fontFamily: 'Manrope',
-                                      fontSize: 13,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w700
-                                          : FontWeight.w500,
-                                      color: isSelected
-                                          ? AppColors.primary
-                                          : AppColors.textSecondary,
+                                  child: AnimatedContainer(
+                                    duration:
+                                        const Duration(milliseconds: 180),
+                                    child: FilterChip(
+                                      label: Text(f.label),
+                                      selected: isSelected,
+                                      onSelected: (_) {
+                                        ref
+                                            .read(
+                                              recordsFilterProvider.notifier,
+                                            )
+                                            .state = f;
+                                      },
+                                      selectedColor: AppColors.primaryLight,
+                                      checkmarkColor: AppColors.primary,
+                                      labelStyle: GoogleFonts.manrope(
+                                        fontSize: 13,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: isSelected
+                                            ? AppColors.primary
+                                            : AppColors.textSecondary,
+                                      ),
+                                      side: BorderSide(
+                                        color: isSelected
+                                            ? AppColors.primary
+                                            : AppColors.border,
+                                        width: isSelected ? 1.5 : 1,
+                                      ),
+                                      showCheckmark: false,
                                     ),
-                                    side: BorderSide(
-                                      color: isSelected
-                                          ? AppColors.primary
-                                          : AppColors.border,
-                                      width: isSelected ? 1.5 : 1,
-                                    ),
-                                    showCheckmark: false,
                                   ),
                                 );
                               }).toList(),
@@ -245,82 +244,80 @@ class _NewRecordCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF3D5AFE), Color(0xFF2541E8)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.35),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF3D5AFE), Color(0xFF2541E8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(22),
-            splashColor: Colors.white.withValues(alpha: 0.1),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                children: [
-                  // Icon container
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(
-                      Icons.add_rounded,
-                      color: Colors.white,
-                      size: 32,
-                    ),
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.30),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+            spreadRadius: -2,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(22),
+          splashColor: Colors.white.withValues(alpha: 0.08),
+          highlightColor: Colors.white.withValues(alpha: 0.04),
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Row(
+              children: [
+                // Icon container
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'New Triage Record',
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
+                  child: const Icon(
+                    Icons.add_rounded,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'New Triage Record',
+                        style: GoogleFonts.manrope(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          height: 1.1,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Log patient intake now',
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withValues(alpha: 0.8),
-                          ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Log patient intake now',
+                        style: GoogleFonts.manrope(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white.withValues(alpha: 0.75),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: Colors.white.withValues(alpha: 0.7),
-                    size: 18,
-                  ),
-                ],
-              ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.white.withValues(alpha: 0.65),
+                  size: 16,
+                ),
+              ],
             ),
           ),
         ),
@@ -361,7 +358,7 @@ class _HeaderIconButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: AppShadows.card,
               ),
-              child: Icon(icon, size: 22, color: AppColors.textPrimary),
+              child: Icon(icon, size: 22, color: AppColors.textSecondary),
             ),
             if (badge != null && badge! > 0)
               Positioned(
@@ -379,8 +376,7 @@ class _HeaderIconButton extends StatelessWidget {
                   ),
                   child: Text(
                     badge! > 9 ? '9+' : '$badge',
-                    style: const TextStyle(
-                      fontFamily: 'Manrope',
+                    style: GoogleFonts.manrope(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -406,15 +402,23 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 56, horizontal: 24),
       child: Column(
         children: [
-          Icon(
-            filter == RecordsFilter.all
-                ? Icons.inbox_rounded
-                : Icons.filter_list_off_rounded,
-            size: 48,
-            color: AppColors.textMuted,
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: AppColors.border,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              filter == RecordsFilter.all
+                  ? Icons.inbox_rounded
+                  : Icons.filter_list_off_rounded,
+              size: 32,
+              color: AppColors.textMuted,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -422,7 +426,7 @@ class _EmptyState extends StatelessWidget {
                 ? 'No triage records yet'
                 : 'No ${filter.label.toLowerCase()} records',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: AppColors.textMuted,
+              color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 8),
