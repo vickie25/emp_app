@@ -10,15 +10,9 @@ Field paramedics operate under extreme time pressure, often with gloved hands, i
 
 ---
 
-## Screenshots
+## Demo
 
-| Login | Home Dashboard | New Triage Record |
-|---|---|---|
-| Paramedic ID + PIN, Quick Demo Login | Connectivity banner, filter chips, CTA card | Priority pill selector, sticky submit |
-
-| Records Queue | Record Detail | Settings |
-|---|---|---|
-| Search + filter, sync status badges | Hero header, info-chip row, sync timeline | Auto-sync toggle, retry, pending count |
+**[Watch the full walkthrough on Loom →](https://www.loom.com/share/9bc854bebf7947d687be9495cbdc5391)**
 
 ---
 
