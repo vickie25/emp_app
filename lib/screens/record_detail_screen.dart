@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/triage_record.dart';
 import '../providers/providers.dart';
@@ -61,8 +62,7 @@ class _DetailContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final priorityColor = PriorityColors.forPriority(record.priority);
-    final dateStr =
-        DateFormat('dd MMM y').format(record.createdAt);
+    final dateStr = DateFormat('dd MMM y').format(record.createdAt);
     final timeStr = DateFormat('HH:mm').format(record.createdAt);
 
     return Scaffold(
@@ -76,6 +76,14 @@ class _DetailContent extends StatelessWidget {
             pinned: true,
             backgroundColor: priorityColor,
             foregroundColor: Colors.white,
+            title: Text(
+              record.patientName,
+              style: GoogleFonts.manrope(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
@@ -101,8 +109,7 @@ class _DetailContent extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 record.patientName,
-                                style: const TextStyle(
-                                  fontFamily: 'Manrope',
+                                style: GoogleFonts.manrope(
                                   fontSize: 28,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -121,15 +128,13 @@ class _DetailContent extends StatelessWidget {
                                 color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color:
-                                      Colors.white.withValues(alpha: 0.4),
+                                  color: Colors.white.withValues(alpha: 0.4),
                                   width: 1.5,
                                 ),
                               ),
                               child: Text(
                                 PriorityColors.shortLabel(record.priority),
-                                style: const TextStyle(
-                                  fontFamily: 'Manrope',
+                                style: GoogleFonts.manrope(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -285,8 +290,9 @@ class _DetailContent extends StatelessWidget {
                       const Spacer(),
                       Text(
                         record.id.substring(0, 8).toUpperCase(),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontFamily: 'monospace',
+                        style: GoogleFonts.spaceMono(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                           color: AppColors.textMuted,
                         ),
                       ),
@@ -347,10 +353,8 @@ class _SyncTimeline extends StatelessWidget {
         );
       case SyncStatus.synced:
         if (record.syncedAt != null) {
-          final syncedAt =
-              DateFormat('HH:mm').format(record.syncedAt!);
-          final syncedDate =
-              DateFormat('dd MMM').format(record.syncedAt!);
+          final syncedAt = DateFormat('HH:mm').format(record.syncedAt!);
+          final syncedDate = DateFormat('dd MMM').format(record.syncedAt!);
           steps.add(
             _TimelineStep(
               icon: Icons.cloud_done_outlined,
@@ -420,8 +424,7 @@ class _SyncTimeline extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       step.label,
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
+                      style: GoogleFonts.manrope(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: step.isError
@@ -432,8 +435,7 @@ class _SyncTimeline extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       step.timestamp,
-                      style: const TextStyle(
-                        fontFamily: 'Manrope',
+                      style: GoogleFonts.manrope(
                         fontSize: 11,
                         fontWeight: FontWeight.w400,
                         color: AppColors.textMuted,

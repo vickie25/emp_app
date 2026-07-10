@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/providers.dart';
 import '../router/app_router.dart';
 import '../theme/app_theme.dart';
@@ -31,7 +32,7 @@ class ProfileScreen extends ConsumerWidget {
       body: ListView(
         padding: EdgeInsets.fromLTRB(
           16,
-          16,
+          24, // Added more breathing room up top
           16,
           MediaQuery.of(context).padding.bottom + 80,
         ),
@@ -42,8 +43,8 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 // Avatar circle
                 Container(
-                  width: 88,
-                  height: 88,
+                  width: 96, // Bumped size from 88 to 96
+                  height: 96,
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
@@ -55,25 +56,24 @@ class ProfileScreen extends ConsumerWidget {
                   child: Center(
                     child: Text(
                       initials,
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 32,
+                      style: GoogleFonts.manrope(
+                        fontSize: 34,
                         fontWeight: FontWeight.w800,
                         color: AppColors.primary,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 18),
                 Text(
                   name,
                   style: theme.textTheme.headlineSmall,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
+                    horizontal: 14,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
@@ -81,8 +81,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   child: Text(
                     id,
-                    style: const TextStyle(
-                      fontFamily: 'Manrope',
+                    style: GoogleFonts.manrope(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: AppColors.primary,
@@ -93,7 +92,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: 36), // More breathing room
 
           // ── Details card ─────────────────────────────────────────────
           AppCard(
@@ -121,7 +120,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: 36),
 
           // ── Logout ───────────────────────────────────────────────────
           OutlinedButton.icon(
@@ -133,16 +132,15 @@ class ProfileScreen extends ConsumerWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  title: const Text(
+                  title: Text(
                     'Sign out?',
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
+                    style: GoogleFonts.manrope(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  content: const Text(
+                  content: Text(
                     'Any unsynced records will be preserved locally.',
-                    style: TextStyle(fontFamily: 'Manrope'),
+                    style: GoogleFonts.manrope(),
                   ),
                   actions: [
                     TextButton(
@@ -171,8 +169,8 @@ class ProfileScreen extends ConsumerWidget {
             ),
             label: const Text('Sign Out'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.danger,
-              side: const BorderSide(color: AppColors.danger, width: 1.5),
+               foregroundColor: AppColors.danger,
+               side: const BorderSide(color: AppColors.danger, width: 1.5),
             ),
           ),
         ],
