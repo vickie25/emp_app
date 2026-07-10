@@ -211,6 +211,4 @@ The following are out of scope for this assessment but required before a real de
 
 ---
 
-## License
 
-MIT
